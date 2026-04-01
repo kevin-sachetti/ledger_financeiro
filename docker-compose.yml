@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - dynamodb-local
+    env_file:
+      - .env
+    environment:
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+    volumes:
+      - .:/app
+    networks:
+      - mini-gestor-network
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    user: root
+    ports:
+      - "8001:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+    volumes:
+      - dynamodb-data:/data
+    networks:
+      - mini-gestor-network
+
+networks:
+  mini-gestor-network:
+    driver: bridge
+
+volumes:
+  dynamodb-data:
